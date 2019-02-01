@@ -8,7 +8,7 @@ import scala.concurrent.duration._
 import akka.actor.{ActorRef, ActorSystem}
 import akka.http.scaladsl.marshalling.Marshal
 import akka.testkit.{DefaultTimeout, ImplicitSender, TestActors, TestKit}
-import connection_point.ConnectionActor
+import Actor.PatientActor
 import dao.PatientDAO
 import model.{FullPatient, Patient}
 
@@ -87,9 +87,9 @@ import scala.util.{Failure, Success}
 class AkkaTest(_system: ActorSystem)  extends TestKit(_system)
   with DefaultTimeout with ImplicitSender
   with WordSpecLike with Matchers with BeforeAndAfterAll {
-    import ConnectionActor._
+    import PatientActor._
     def this() = this(ActorSystem("AkkaTestSpec"))
-    val pActor = system.actorOf(ConnectionActor.props, "PatientActor")
+    val pActor = system.actorOf(PatientActor.props, "PatientActor")
     override def afterAll {
         shutdown()
     }

@@ -1,4 +1,4 @@
-package connection_point
+package Actor
 
 import akka.actor.{Actor, ActorLogging, Props}
 import dao.PatientDAO
@@ -8,8 +8,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success, Try}
 
 final case class Patients(patients: Seq[Patient])
-object ConnectionActor {
-  def props = Props[ConnectionActor]
+object PatientActor {
+  def props = Props[PatientActor]
   case class AddPatient(p: FullPatient)
   case class GetPatients()
   case class AddPatientTest(p: Patient)
@@ -22,8 +22,8 @@ object ConnectionActor {
   final case class OpFailed (msg: String)
 
 }
-class ConnectionActor extends Actor with ActorLogging {
-  import ConnectionActor._
+class PatientActor extends Actor with ActorLogging {
+  import PatientActor._
 
   val patientDao = new PatientDAO()
   var patients = Set.empty[Patient]

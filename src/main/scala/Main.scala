@@ -13,8 +13,8 @@ import akka.http.scaladsl.model.StatusCodes
 import akka.stream.ActorMaterializer
 import akka.pattern.ask
 import akka.util.Timeout
-import connection_point.ConnectionActor._
-import connection_point.{ConnectionActor, Patients}
+import Actor.PatientActor._
+import Actor.{PatientActor, Patients}
 import dao.PatientDAO
 
 import scala.concurrent.{Await, Future}
@@ -82,7 +82,7 @@ object  Main extends App {
 
     implicit val system = ActorSystem()
     implicit val materializer = ActorMaterializer()
-    implicit val pActor: ActorRef = system.actorOf(ConnectionActor.props, "PatientActor")
+    implicit val pActor: ActorRef = system.actorOf(PatientActor.props, "PatientActor")
     val patientRoute = new Router()
     val bindingFuture = Http().bindAndHandle(patientRoute.route, "localhost", 8080)
 
