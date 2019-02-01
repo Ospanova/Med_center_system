@@ -104,7 +104,7 @@ class AkkaTest(_system: ActorSystem)  extends TestKit(_system)
         }
         "delete patient " in {
             within(500 millis) {
-                pActor ! DeletePatient(16)
+                pActor ! DeletePatient(23)
                 expectMsg(ActionPerformed("Deleted"))
             }
         }
@@ -112,6 +112,11 @@ class AkkaTest(_system: ActorSystem)  extends TestKit(_system)
             within(500 millis) {
                 pActor ! DeletePatient(111)
                 expectMsg(ActionPerformed("Failed"))
+            }
+        }
+        "get patient by ID " in {
+            within(500 millis) {
+
             }
         }
         "update patient " in  {
