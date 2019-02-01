@@ -1,9 +1,9 @@
 package mappings
 
-import connection_point.ConnectionActor.ActionPerformed
+import Actor.PatientActor.ActionPerformed
 import model.{FullPatient, Patient}
 import spray.json.DefaultJsonProtocol
-import connection_point._
+import Actor._
 
 trait JsonMappings extends DefaultJsonProtocol {
     implicit val patientFormat = jsonFormat5(Patient)
