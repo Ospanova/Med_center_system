@@ -8,7 +8,7 @@ import scala.concurrent.duration._
 import akka.actor.{ActorRef, ActorSystem}
 import akka.http.scaladsl.marshalling.Marshal
 import akka.testkit.{DefaultTimeout, ImplicitSender, TestActors, TestKit}
-import Actor.PatientActor
+import Actors.PatientActor
 import dao.PatientDAO
 import model.{FullPatient, Patient}
 

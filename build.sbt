@@ -32,9 +32,11 @@ libraryDependencies +=  "de.heikoseeberger" %% "akka-http-circe" % "1.21.0"
 libraryDependencies ++= Seq(
   "org.postgresql" % "postgresql" % "9.4-1201-jdbc4",
   "com.typesafe.slick" %% "slick" % "3.2.3",
-  //"org.slf4j" % "slf4j-nop" % "1.6.4",
-  //"org.json4s"          %%  "json4s-native" % "3.5.2",
- // "org.slf4j"           %   "slf4j-simple"  % "1.7.12"
+    "ch.qos.logback"      %  "logback-classic"                      % "1.1.2" % "test",
+    "junit"           	  % "junit"                                 % "4.12" % "test",
+    "com.newmotion" %% "akka-rabbitmq" % "5.0.4-beta",
+    "org.json4s" %% "json4s-native" % "3.6.4",
+    "org.json4s" %% "json4s-jackson" % "3.6.4"
 )
 
 libraryDependencies += "com.typesafe.akka" %% "akka-http-spray-json" % "10.1.7"

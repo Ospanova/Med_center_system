@@ -1,12 +1,13 @@
-import Actor.PatientActor
-import Actor.PatientActor.{ActionPerformed, AddPatient, DeletePatient, UpdatePatient}
+import Actors.PatientActor
+import Actors.PatientActor.{ActionPerformed, AddPatient, DeletePatient, UpdatePatient}
 import akka.actor.ActorSystem
 import akka.testkit.{DefaultTimeout, ImplicitSender, TestKit}
 import dao.PatientDAO
 import model.{FullPatient, Patient}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
-
+import scala.concurrent.duration._
 import scala.util.{Failure, Success}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class AkkaTest(_system: ActorSystem)  extends TestKit(_system)
   with DefaultTimeout with ImplicitSender

@@ -1,7 +1,10 @@
-package Actor
+package Actors
+
+import java.io.{ByteArrayInputStream, ByteArrayOutputStream, ObjectInputStream, ObjectOutputStream}
 
 import akka.actor.{Actor, ActorLogging, Props}
 import dao.PatientDAO
+import mapping.SerDesObjects
 import model.{FullPatient, Patient}
 
 import scala.concurrent.ExecutionContext.Implicits.global

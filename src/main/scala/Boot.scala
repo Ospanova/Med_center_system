@@ -1,3 +1,4 @@
+package mainn
 
 import model.{FullPatient, Patient}
 import akka.actor.{ActorRef, ActorSystem}
@@ -13,8 +14,10 @@ import akka.http.scaladsl.model.StatusCodes
 import akka.stream.ActorMaterializer
 import akka.pattern.ask
 import akka.util.Timeout
-import Actor.PatientActor._
-import Actor.{PatientActor, Patients}
+import Actors.PatientActor._
+import Actors.{PatientActor, Patients}
+import RabbitQ.{Recv, SendRabbit}
+import akka.io.Udp.Send
 import dao.PatientDAO
 
 import scala.concurrent.{Await, Future}
@@ -75,7 +78,7 @@ class Router(implicit val system: ActorSystem, val patientActor: ActorRef) exten
                 }
             }
 }
-object  Main extends App {
+object  Boot extends App {
 
 //    val patientDao = new PatientDAO
 //    patientDao.addPatient(FullPatient("dfghj", "ghjkl", "Ghjk", "ghjkl"))
@@ -83,7 +86,15 @@ object  Main extends App {
     implicit val system = ActorSystem()
     implicit val materializer = ActorMaterializer()
     implicit val pActor: ActorRef = system.actorOf(PatientActor.props, "PatientActor")
+
     val patientRoute = new Router()
     val bindingFuture = Http().bindAndHandle(patientRoute.route, "localhost", 8080)
+
+    val sendCl = SendRabbit("""{"action":"getByID","id": 5}""")
+    sendCl.sendMsg()
+    //Thread.sleep(1000)
+    val rcv = Recv()
+    rcv.recv()
+
 
 }
