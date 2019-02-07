@@ -90,6 +90,8 @@ object  Boot extends App {
     val patientRoute = new Router()
     val bindingFuture = Http().bindAndHandle(patientRoute.route, "localhost", 8080)
 
+
+
     val sendCl = SendRabbit("""{"action":"getByID","id": 5}""")
     sendCl.sendMsg()
     //Thread.sleep(1000)
