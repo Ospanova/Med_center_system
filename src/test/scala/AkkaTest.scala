@@ -7,6 +7,7 @@ import model.{FullPatient, Patient}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 import scala.concurrent.duration._
 import scala.util.{Failure, Success}
+import akka.pattern.ask
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class AkkaTest(_system: ActorSystem)  extends TestKit(_system)
@@ -18,45 +19,72 @@ class AkkaTest(_system: ActorSystem)  extends TestKit(_system)
     override def afterAll {
         shutdown()
     }
-
-    "An ConnectionActor" should {
-        val patientDao = new PatientDAO()
-        "return patients in getting request" in {
-            within(500 millis) {
-                pActor ! AddPatient(FullPatient("Ulzhan", "Ospan", "asd", "asdf"))
-                expectMsg(ActionPerformed("Added"))
-            }
-        }
-        "delete patient " in {
-            within(500 millis) {
-                pActor ! DeletePatient(23)
-                expectMsg(ActionPerformed("Deleted"))
-            }
-        }
-        "doesn't delete patient " in {
-            within(500 millis) {
-                pActor ! DeletePatient(111)
-                expectMsg(ActionPerformed("Failed"))
-            }
-        }
-        "get patient by ID " in {
-            within(500 millis) {
-
-            }
-        }
-        "update patient " in  {
-            within(500 millis) {
-                val oldP = patientDao.getPatient(8);
-                pActor ! UpdatePatient(12, Patient(Some(8), "Dikosh", "Murzekenova", "dimur", "12345"))
-                oldP.onComplete {
-                    case Success(value) => {
-                        pActor ! UpdatePatient(8, value.head)
+    val patientDao = new PatientDAO()
+    var ind = -1
+    val patients = patientDao.getPatients()
+    patients.onComplete {
+        case Success(pts) => {
+            "An ConnectionActor" should {
+                val patientDao = new PatientDAO()
+                "return patients in getting request" in {
+                    within(500 millis) {
+                        pActor ! AddPatient(FullPatient("Ulzhan", "Ospan", "asd", "asdf"))
+                        expectMsg(ActionPerformed("Added"))
                     }
-                    case Failure(exception) => println(exception.getMessage)
                 }
-                expectMsg(ActionPerformed("Failed"))
+                "delete patient " in {
+                    within(500 millis) {
+                        if (!pts.isEmpty) {
+                            pActor ! DeletePatient(pts.last.patient_id.getOrElse(-1))
+                            if (!pts.isEmpty)
+                                expectMsg(ActionPerformed("Deleted"))
+                        }
+                        else
+                            expectMsg(ActionPerformed("Failed"))
+                    }
+                }
+                "doesn't delete patient " in {
+                    within(500 millis) {
+                        if (!pts.isEmpty) {
+                            pActor ! DeletePatient(pts.last.patient_id.getOrElse(-2) + 1)
+                            expectMsg(ActionPerformed("Failed"))
+                        }
+                        else
+                            expectMsg(ActionPerformed("Failed"))
+                    }
+                }
+                "get patient by ID " in {
+                    within(500 millis) {
+                        val id = pts.last.patient_id.getOrElse(-1)
+                        if (!pts.isEmpty) {
+                            pActor ! GetbyID(id)
+                            expectMsg(pts.last)
+                        }
+                    }
+                }
+                "update patient " in {
+                    within(500 millis) {
+                        if (!pts.isEmpty) {
+                            val id = pts.last.patient_id.getOrElse(-1)
+                            val oldP = patientDao.getPatient(id);
+
+                            pActor ! UpdatePatient(id, Patient(Some(id), "Dikosh", "Murzekenova", "dimur", "12345"))
+
+                            oldP.onComplete {
+                                case Success(value) => {
+                                    pActor ! UpdatePatient(id, value.head)
+                                    expectMsg(ActionPerformed("Updated"))
+                                }
+                                case Failure(exception) => expectMsg(ActionPerformed("Failed"))
+                            }
+
+                        }
+                        else
+                            expectMsg(ActionPerformed("Failed"))
+                    }
+                }
+
             }
         }
-
     }
 }

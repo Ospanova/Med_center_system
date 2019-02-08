@@ -28,6 +28,10 @@ class PatientDAO () {
         db.run(action)
 
     }
+    def addPatientTest(p: Patient) = {
+        val action = (allpatients returning allpatients += p)
+        db.run(action)
+    }
     def getPatient(id: Int) = db.run( allpatients.filter(_.patient_id === id).result)
     def updatePatient(id: Int , newP: Patient) = {
 

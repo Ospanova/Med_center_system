@@ -22,6 +22,7 @@ import dao.PatientDAO
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.{Failure, Success}
 
 
 class Router(implicit val system: ActorSystem, val patientActor: ActorRef) extends JsonMappings {
@@ -89,14 +90,15 @@ object  Boot extends App {
 
     val patientRoute = new Router()
     val bindingFuture = Http().bindAndHandle(patientRoute.route, "localhost", 8080)
+//
+//
+//    val sendCl = SendRabbit("""{"action":"getByID","id": 5}""")
+//    sendCl.sendMsg()
+//    //Thread.sleep(1000)
+//    val rcv = Recv()
+//    rcv.recv()
 
 
-
-    val sendCl = SendRabbit("""{"action":"getByID","id": 5}""")
-    sendCl.sendMsg()
-    //Thread.sleep(1000)
-    val rcv = Recv()
-    rcv.recv()
 
 
 }

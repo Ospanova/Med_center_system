@@ -14,73 +14,93 @@ import model.{FullPatient, Patient}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.util.{Failure, Success}
+import scala.util.{Failure, Success, Try}
 
 class PatientTest extends FunSuite {
     val patientDao = new PatientDAO()
-    test("Get_Patient_by_7"){
-        val p: Future[Seq[Patient]] = patientDao.getPatient(7)
-        var ok = false
-        p.onComplete{
-            case Success(value) => {
-                if (value.head.equals(Patient(Some(7),"Dikosh", "Ospan", "asdf", "asdfg"))) {
-                    ok = true
+    var ind = -1
+    val patients = patientDao.getPatients()
+    patients.onComplete {
+        case Success(pts) => {
+
+            test("Get patient by 7") {
+                if (!pts.isEmpty) {
+                    val p: Future[Seq[Patient]] = patientDao.getPatient(pts.last.patient_id.getOrElse(-1))
+                    var ok = false
+                    println(p)
+                    p.onComplete {
+                        case Success(value) => {
+                            if (!value.isEmpty)
+                                if (value.head.equals(pts.last)) {
+                                    ok = true
+                                }
+                            assert(ok)
+                        }
+                        case Failure(exp) => assert(false)
+                    }
                 }
-                assert(ok)
+                else
+                    assert(true)
             }
-            case Failure(exp) => println(exp.getMessage)
-        }
-    }
-    test("Update_Patient") {
-        val oldP = patientDao.getPatient(7);
-        val p = patientDao.updatePatient(7, Patient(Some(7), "Kura", "Ospan", "asdf", "asdfg"))
-        var ok = false
-        p.onComplete {
-            case Success(value) => {
-                oldP.onComplete {
+
+            test("Add new patient") {
+                val newP = FullPatient("Ulzhan", "Ospan", "uljanek", "12345")
+                val addAction: Future[Patient] = patientDao.addPatient(newP)
+                addAction.onComplete {
                     case Success(value) => {
-                        val c = patientDao.updatePatient(7, value.head)
-                        c.onComplete{
-                            case Success(value) => {
-                                ok = true
+                        assert(true)
+                        ind = value.patient_id.getOrElse(-1)
+                    }
+                    case Failure(exp) => assert(false)
+                }
+            }
+            test("Delete_Patient") {
+                val cur: Future[Try[Int]] = patientDao.deletePatient(ind)
+                var ok = false
+                cur.onComplete {
+                    case Success(value) => {
+                        value match {
+                            case Success(id) => {
+                                if (id > 0)
+                                    ok = true
                                 assert(ok)
                             }
-                            case Failure(exp) => println("ERROR")
+                            case Failure(exp) => assert(false)
                         }
-                        //.ready(c, 5.seconds)
+
                     }
-                    case Failure(exp) => println(exp.getMessage)
+                    case Failure(exp) => assert(false)
                 }
+
             }
-            case Failure(exp) => {
-                println("UPDATE_ERROR")
+            test("Update patient") {
+                if (!pts.isEmpty) {
+                    val id = pts.last.patient_id.getOrElse(-1)
+                    val oldP = patientDao.getPatient(id);
+                    val p = patientDao.updatePatient(id, Patient(Some(id), "Kura", "Ospan", "asdf", "asdfg"))
+                    p.onComplete {
+                        case Success(value) => {
+                            oldP.onComplete {
+                                case Success(value) => {
+                                    val c = patientDao.updatePatient(id, value.head)
+                                    c.onComplete {
+                                        case Success(value) => {
+                                            assert(true)
+                                        }
+                                        case Failure(exp) => assert(false)
+                                    }
+                                    //.ready(c, 5.seconds)
+                                }
+                                case Failure(exp) => assert(false)
+                            }
+                        }
+                        case Failure(exp) => assert(false)
+                    }
+                }
+                else
+                    assert(true)
             }
         }
-
-    }
-    test("Delete_Patient") {
-        val oldP = patientDao.getPatient(7)
-        val cur = patientDao.deletePatient(7)
-        var ok = false
-        cur.onComplete {
-            case Success(value) => {
-                oldP.onComplete {
-                    case Success(p) => {
-                        val fP = FullPatient(p.head.name, p.head.surname, p.head.login, p.head.password)
-                        val c = patientDao.addPatient(fP)
-                        //Await.ready(c, 5.seconds)
-                        ok = true
-                        assert(ok)
-                    }
-                    case Failure(exp) => {
-                        ok = false
-                        println(exp.getMessage)
-                    }
-                }
-            }
-            case Failure(exp) => println(exp.getMessage)
-        }
-
     }
 
 }
