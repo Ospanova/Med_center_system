@@ -81,9 +81,6 @@ class Router(implicit val system: ActorSystem, val patientActor: ActorRef) exten
 }
 object  Boot extends App {
 
-//    val patientDao = new PatientDAO
-//    patientDao.addPatient(FullPatient("dfghj", "ghjkl", "Ghjk", "ghjkl"))
-
     implicit val system = ActorSystem()
     implicit val materializer = ActorMaterializer()
     implicit val pActor: ActorRef = system.actorOf(PatientActor.props, "PatientActor")
@@ -92,13 +89,12 @@ object  Boot extends App {
     val bindingFuture = Http().bindAndHandle(patientRoute.route, "localhost", 8080)
 //
 //
-//    val sendCl = SendRabbit("""{"action":"getByID","id": 5}""")
-//    sendCl.sendMsg()
-//    //Thread.sleep(1000)
-//    val rcv = Recv()
-//    rcv.recv()
+    val sendClDelete = SendRabbit("""{"action":"delete","id": 5}""")
+    val sendClAdd = SendRabbit("""{"action":"addPatient","name": "Amir","surname":"Ospan","login":"amir", "password":"12345"}""")
+    val sendClUpdate = SendRabbit("""{"action":"UPDATE","patient_id":25,"name":"Aida","surname":"Ospanova","login":"ospanovaida","password":"12345"}""")
+    sendClUpdate.sendMsg()
+    sendClDelete.sendMsg()
+    sendClAdd.sendMsg()
 
-
-
-
+    Recv().recv()
 }

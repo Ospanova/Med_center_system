@@ -37,6 +37,7 @@ case class Recv() {
             println(" [x] Received '" + message + "'")
             val p: JValue = parse(message)
             val curM = p.extract[Action].action
+            println(curM)
             if ( curM == "getPatients") {
                 val act: Future[Patients] = (pActor ? GetPatients).mapTo[Patients]
                 act.onComplete {
@@ -53,23 +54,25 @@ case class Recv() {
                 }
             }
             else if (curM == "delete") {
-                val patient: Future[ActionPerformed] = (pActor ? DeletePatient(p.extract[Patient].patient_id.get)).mapTo[ActionPerformed]
+                val patient: Future[ActionPerformed] = (pActor ? DeletePatient(p.extract[PID].id)).mapTo[ActionPerformed]
                 patient.onComplete {
-                    case Success(value) => println("Deleted")
+                    case Success(value) => println(value.description)
                     case Failure(exception) => println("Failed")
                 }
             }
             else if (curM == "addPatient") {
                 val patient: FullPatient = p.extract[FullPatient]
-                val act = (pActor ? AddPatient(patient)).mapTo[ActionPerformed]
+                println(patient)
+                val act: Future[ActionPerformed] = (pActor ? AddPatient(patient)).mapTo[ActionPerformed]
                 act.onComplete {
-                    case Success(value) => println("Added")
+                    case Success(value) => println(value.description)
                     case Failure(exception) => println("Failed")
                 }
-
             }
             else {
+                println("ghjkl")
                 val patient= p.extract[Patient]
+                println(patient)
                 val id = patient.patient_id
                 val act = (pActor ? UpdatePatient(id.getOrElse(0), patient)).mapTo[ActionPerformed]
                 act.onComplete {

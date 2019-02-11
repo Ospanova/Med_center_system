@@ -36,8 +36,7 @@ class AkkaTest(_system: ActorSystem)  extends TestKit(_system)
                     within(500 millis) {
                         if (!pts.isEmpty) {
                             pActor ! DeletePatient(pts.last.patient_id.getOrElse(-1))
-                            if (!pts.isEmpty)
-                                expectMsg(ActionPerformed("Deleted"))
+                            expectMsg(ActionPerformed("Deleted"))
                         }
                         else
                             expectMsg(ActionPerformed("Failed"))
