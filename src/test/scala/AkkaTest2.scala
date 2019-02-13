@@ -48,7 +48,7 @@ class AkkaTest2 extends  TestKit(ActorSystem()) with ImplicitSender
                         }
                     }
                 }
-                "delete patient" in {
+                "delete patient   " in {
                     within(500 millis) {
                         val delAction = pActor ? DeletePatient(id)
                         delAction.onComplete {
