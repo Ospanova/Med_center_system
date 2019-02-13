@@ -13,95 +13,84 @@ import dao.PatientDAO
 import model.{FullPatient, Patient}
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
 import scala.util.{Failure, Success, Try}
+import scala.concurrent.duration._
 
 class PatientTest extends FunSuite {
     val patientDao = new PatientDAO()
-    var ind = -1
-    val patients = patientDao.getPatients()
-    patients.onComplete {
-        case Success(pts) => {
+    val testP = FullPatient("Ulzhan", "Ospan", "uljanek", "12345")
+    val addPatient = patientDao.addPatient(testP)
+    println(s"Future is ${addPatient}")
+    val patient = Await.result(addPatient, 10.seconds)
+    println(s" ID of patient ${patient.patient_id}")
+    patient.patient_id match  {
+        case Some(id) =>
+        {
 
-            test("Get patient by 7") {
-                if (!pts.isEmpty) {
-                    val p: Future[Seq[Patient]] = patientDao.getPatient(pts.last.patient_id.getOrElse(-1))
-                    var ok = false
-                    println(p)
-                    p.onComplete {
-                        case Success(value) => {
-                            if (!value.isEmpty)
-                                if (value.head.equals(pts.last)) {
-                                    ok = true
-                                }
-                            assert(ok)
-                        }
-                        case Failure(exp) => assert(false)
-                    }
-                }
-                else
-                    assert(true)
+            test("Check id") {
+                assert(id > 0, "ID must be equal")
+            }
+            test ("Check name") {
+                assert(patient.name == testP.name, "Names must be equal")
             }
 
-            test("Add new patient") {
-                val newP = FullPatient("Ulzhan", "Ospan", "uljanek", "12345")
-                val addAction: Future[Patient] = patientDao.addPatient(newP)
-                addAction.onComplete {
-                    case Success(value) => {
-                        assert(true)
-                        ind = value.patient_id.getOrElse(-1)
+            test ("Check login") {
+                assert(patient.login == testP.login, "Logins must be equal")
+            }
+            test ("Check surname") {
+                assert(patient.surname == testP.surname, "Surnames must be equal")
+            }
+            test ("Check password") {
+                assert(patient.password == testP.password, "passwords must be equal")
+            }
+            test ("Get patient") {
+                val p = patientDao.getPatient(id)
+
+                p.onComplete {
+                    case Success(value: Seq[Patient]) => {
+                        //println(value.head.equals(testP))
+                        assert(value.head.equals(testP))
                     }
-                    case Failure(exp) => assert(false)
+                    case Failure(exp) => println("Failure")
                 }
             }
-            test("Delete_Patient") {
-                val cur: Future[Try[Int]] = patientDao.deletePatient(ind)
+            test ("Update patient") {
+                val updateAction : Future[Try[Int]] = patientDao.updatePatient(id, Patient(Some(id), "Kura", "Ospan", "asdf", "asdfg"))
                 var ok = false
-                cur.onComplete {
+                updateAction.onComplete {
                     case Success(value) => {
                         value match {
-                            case Success(id) => {
-                                if (id > 0)
+                            case Success(int) => {
+                                if (int > 0)
                                     ok = true
                                 assert(ok)
                             }
-                            case Failure(exp) => assert(false)
+                            case Failure(exp) => println("Failure")
                         }
-
                     }
-                    case Failure(exp) => assert(false)
+                    case Failure(exception) => println("Failure")
                 }
-
             }
-            test("Update patient") {
-                if (!pts.isEmpty) {
-                    val id = pts.last.patient_id.getOrElse(-1)
-                    val oldP = patientDao.getPatient(id);
-                    val p = patientDao.updatePatient(id, Patient(Some(id), "Kura", "Ospan", "asdf", "asdfg"))
-                    p.onComplete {
-                        case Success(value) => {
-                            oldP.onComplete {
-                                case Success(value) => {
-                                    val c = patientDao.updatePatient(id, value.head)
-                                    c.onComplete {
-                                        case Success(value) => {
-                                            assert(true)
-                                        }
-                                        case Failure(exp) => assert(false)
-                                    }
-                                    //.ready(c, 5.seconds)
-                                }
-                                case Failure(exp) => assert(false)
+            test ("Delete patient") {
+                val deleteAction = patientDao.deletePatient(id)
+                var ok = false
+                deleteAction.onComplete {
+                    case Success(value) => {
+                        value match {
+                            case Success( int ) => {
+                                if (int > 0)
+                                    ok = true
+                                assert(ok)
                             }
+                            case Failure(exp) => println("Failure")
                         }
-                        case Failure(exp) => assert(false)
                     }
+                    case Failure(exp) => println("Failure")
                 }
-                else
-                    assert(true)
             }
         }
+        case _ => test("Matching is not correct") {assert(false, "Id is not defined")}
     }
-
 }
 

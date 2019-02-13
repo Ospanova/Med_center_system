@@ -40,7 +40,7 @@ class PatientActor extends Actor with ActorLogging {
     case AddPatient(p: FullPatient) =>
         val rootsender = sender()
           patientDao.addPatient(p).onComplete {
-              case Success(value) => rootsender ! ActionPerformed(s"Added")
+              case Success(value) => rootsender ! value
               case Failure(exp) => rootsender ! ActionPerformed(exp.getMessage)
           }
     case GetbyID (id: Int) =>

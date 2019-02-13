@@ -5,7 +5,7 @@ import com.rabbitmq.client.ConnectionFactory
 import org.json4s.jackson.JsonMethods._
 
 case class SendRabbit(msg: String) {
-    private val QUEUE_NAME = "patient_grud"
+    private val QUEUE_NAME = "Patient_query"
     val factory = new ConnectionFactory()
     factory.setHost("localhost")
     def sendMsg(): Unit ={

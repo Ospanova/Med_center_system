@@ -21,7 +21,6 @@ class PatientDAO () {
     def addPatient(p: FullPatient) = {
 
         val patient = Patient(None, p.name, p.surname, p.login, p.password)
-        println(patient)
         val action =
             (allpatients returning allpatients.map(_.patient_id) += patient).map(id => patient.copy(patient_id = Some(id)))
             //(allpatients returning allpatients.map(_.patient_id) into ((pp, patient_id) => pp.copy(patient_id = Some(patient_id)))) += patient

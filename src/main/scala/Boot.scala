@@ -48,7 +48,7 @@ class Router(implicit val system: ActorSystem, val patientActor: ActorRef) exten
             } ~
             post {
                 entity(as[FullPatient]) { p =>
-                  val patient = (patientActor ? AddPatient(p)).mapTo[ActionPerformed]
+                  val patient = (patientActor ? AddPatient(p)).mapTo[Patient]
                   onSuccess(patient) { performed =>
                     complete(s"OK ${performed}")
                   }
@@ -81,14 +81,17 @@ class Router(implicit val system: ActorSystem, val patientActor: ActorRef) exten
 }
 object  Boot extends App {
 
+    val p1 = Patient(Some(12), "asd", "asd", "asd", "asd")
+    val p2 = Patient(Some(12), "asd", "asd", "asd", "asd")
+    println(p1.isInstanceOf[Patient])
+
     implicit val system = ActorSystem()
     implicit val materializer = ActorMaterializer()
     implicit val pActor: ActorRef = system.actorOf(PatientActor.props, "PatientActor")
 
     val patientRoute = new Router()
     val bindingFuture = Http().bindAndHandle(patientRoute.route, "localhost", 8080)
-//
-//
+
     val sendClDelete = SendRabbit("""{"action":"delete","id": 5}""")
     val sendClAdd = SendRabbit("""{"action":"addPatient","name": "Amir","surname":"Ospan","login":"amir", "password":"12345"}""")
     val sendClUpdate = SendRabbit("""{"action":"UPDATE","patient_id":25,"name":"Aida","surname":"Ospanova","login":"ospanovaida","password":"12345"}""")
