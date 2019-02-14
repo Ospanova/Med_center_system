@@ -90,7 +90,12 @@ class PatientTest extends FunSuite {
                 }
             }
         }
+<<<<<<< HEAD
         case _ => test("Matching is not correct") {assert(false, "Id is not defined")}
+=======
+
+
+>>>>>>> develop
     }
 }
 
