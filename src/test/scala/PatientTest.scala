@@ -81,6 +81,7 @@ class PatientTest extends FunSuite {
             case Failure(exp) => println(exp.getMessage)
         }
 
+
     }
 
 }
