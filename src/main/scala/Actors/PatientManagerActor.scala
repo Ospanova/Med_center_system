@@ -9,8 +9,9 @@ import model.{FullPatient, Patient}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success, Try}
-
 final case class Patients(patients: Seq[Patient])
+
+
 object PatientActor {
   def props = Props[PatientActor]
   case class AddPatient(p: FullPatient)
@@ -31,29 +32,29 @@ class PatientActor extends Actor with ActorLogging {
   val patientDao = new PatientDAO()
   var patients = Set.empty[Patient]
   override def receive: Receive = {
-    case GetPatients =>
-      val rootsender = sender()
-      patientDao.getPatients().onComplete {
-          case Success(value: Seq[(Int, String, String, String, String)]) => rootsender ! Patients(value)
-          case Failure(exp) => rootsender ! ActionPerformed("Fail")
-      }
-    case AddPatient(p: FullPatient) =>
-        val rootsender = sender()
+      case GetPatients =>
+          val rootsender = sender()
+          patientDao.getPatients().onComplete {
+              case Success(value: Seq[(Int, String, String, String, String)]) => rootsender ! Patients(value)
+              case Failure(exp) => rootsender ! ActionPerformed("Fail")
+          }
+      case AddPatient(p: FullPatient) =>
+          val rootsender = sender()
           patientDao.addPatient(p).onComplete {
               case Success(value) => rootsender ! value
               case Failure(exp) => rootsender ! ActionPerformed(exp.getMessage)
           }
-    case GetbyID (id: Int) =>
+      case GetbyID(id: Int) =>
           val rootsender = sender()
-          patientDao.getPatient(id).onComplete{
+          patientDao.getPatient(id).onComplete {
               case Success(value) => rootsender ! value.headOption
               case Failure(exp) => rootsender ! ActionPerformed("Failed")
           }
-    case DeletePatient(id: Int) =>
+      case DeletePatient(id: Int) =>
           val rootsender = sender()
           patientDao.deletePatient(id).onComplete {
-              case Success(value: Try[Int]) =>{
-                  value match  {
+              case Success(value: Try[Int]) => {
+                  value match {
                       case Success(id: Int) => {
                           if (id > 0)
                               rootsender ! ActionPerformed("Deleted")
@@ -61,26 +62,28 @@ class PatientActor extends Actor with ActorLogging {
                               rootsender ! ActionPerformed("Failed")
                       }
                       case Failure(exp) =>
-                               rootsender ! ActionPerformed("Failed")
+                          rootsender ! ActionPerformed("Failed")
                   }
               }
               case Failure(exp) => rootsender ! ActionPerformed("Failed")
           }
-    case UpdatePatient(id: Int , p : Patient) =>
+      case UpdatePatient(id: Int, p: Patient) => {
           val rootsender = sender()
-          patientDao.updatePatient(id, p).onComplete{
-              case Success(value) => {
+          patientDao.updatePatient(id, p).onComplete {
+              case Success(value: Try[Int]) => {
                   value match {
-                      case Success(id ) => {
-                          if (id > 0)
+                      case Success(id) => {
+                          if (id > 0) {
                               rootsender ! ActionPerformed("Updated")
+                          }
                           else
                               rootsender ! ActionPerformed("Failed")
                       }
-                      case Failure(exp) => ActionPerformed(exp.getMessage)
+                      case Failure(exp) => ActionPerformed("Failed")
                   }
               }
               case Failure(exp) => rootsender ! ActionPerformed("Failed")
           }
+  }
   }
 }

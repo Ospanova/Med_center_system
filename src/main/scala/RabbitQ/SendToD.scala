@@ -5,13 +5,13 @@ import com.rabbitmq.client.AMQP.Channel
 import com.rabbitmq.client.{AMQP, ConnectionFactory}
 import org.json4s.jackson.JsonMethods._
 
-case class SendRabbit(msg: String) {
+case class SendToD() {
     val factory = new ConnectionFactory()
     factory.setHost("localhost")
     val workExchange = "X:gateway.in.fanout"
-    val routingKey = "response.patient.#"
+    val routingKey = "request.doctor.#"
 
-    def sendMsg(): Unit ={
+    def sendMsg(msg: String): Unit ={
         val connection = factory.newConnection()
         val channel = connection.createChannel()
         declare(workExchange, routingKey, true)
@@ -19,7 +19,7 @@ case class SendRabbit(msg: String) {
             channel.exchangeDeclare(exchangeName, "fanout", durable)
         }
 
-        channel.basicPublish("X:gateway.in.fanout","routing_key", null, msg.getBytes())
+        channel.basicPublish("X:gateway.in.fanout",routingKey, null, msg.getBytes())
         println(" [x] Sent '" + msg + "'")
         channel.close()
         connection.close()

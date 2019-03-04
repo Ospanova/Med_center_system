@@ -20,9 +20,9 @@ class PatientDAO () {
 
     def addPatient(p: FullPatient) = {
 
-        val patient = Patient(None, p.name, p.surname, p.login, p.password)
+        val patient = Patient(None, p.name, p.surname, p.username, p.password, p.number, p.stringCalendar)
         val action =
-            (allpatients returning allpatients.map(_.patient_id) += patient).map(id => patient.copy(patient_id = Some(id)))
+            (allpatients returning allpatients.map(_.ID) += patient).map(id => patient.copy(ID = Some(id)))
             //(allpatients returning allpatients.map(_.patient_id) into ((pp, patient_id) => pp.copy(patient_id = Some(patient_id)))) += patient
         db.run(action)
 
@@ -31,12 +31,12 @@ class PatientDAO () {
         val action = (allpatients returning allpatients += p)
         db.run(action)
     }
-    def getPatient(id: Int) = db.run( allpatients.filter(_.patient_id === id).result)
+    def getPatient(id: Int) = db.run( allpatients.filter(_.ID === id).result)
     def updatePatient(id: Int , newP: Patient) = {
 
-        val action = for { b <- allpatients if b.patient_id === id } yield (b.name, b.surname, b.login, b.password)
-        db.run(action.update(newP.name, newP.surname, newP.login, newP.password).asTry)
+        val action = for { b <- allpatients if b.ID === id } yield (b.name, b.surname, b.username, b.password, b.number, b.stringCalendar)
+        db.run(action.update(newP.name, newP.surname, newP.username, newP.password, newP.number, newP.stringCalendar).asTry)
 
     }
-    def deletePatient(id: Int) = db.run(allpatients.filter(_.patient_id === id).delete.asTry)
+    def deletePatient(id: Int) = db.run(allpatients.filter(_.ID === id).delete.asTry)
 }
