@@ -24,29 +24,29 @@ class SendAlpakka {
     )
     val fanoutSize = 4
 
-    val mergedSources = (0 until fanoutSize).foldLeft(Source.empty[(Int, String)]) {
-        case (source, fanoutBranch) =>
-            source.merge(
-                AmqpSource
-                  .atMostOnceSource(
-                      TemporaryQueueSourceSettings(
-                          connectionProvider,
-                          exchangeName
-                      ).withDeclaration(exchangeDeclaration),
-                      bufferSize = 1
-                  )
-                  .map(msg => (fanoutBranch, msg.bytes.utf8String))
-            )
-    }
+//    val mergedSources = (0 until fanoutSize).foldLeft(Source.empty[(Int, String)]) {
+//        case (source, fanoutBranch) =>
+//            source.merge(
+//                AmqpSource
+//                  .atMostOnceSource(
+//                      TemporaryQueueSourceSettings(
+//                          connectionProvider,
+//                          exchangeName
+//                      ).withDeclaration(exchangeDeclaration),
+//                      bufferSize = 1
+//                  )
+//                  .map(msg => (fanoutBranch, msg.bytes.utf8String))
+//            )
+//    }
     val completion = Promise[Done]
-    val mergingFlow = mergedSources
-      .viaMat(KillSwitches.single)(Keep.right)
-      .to(Sink.fold(Set.empty[Int]) {
-          case (seen, (branch, element)) =>
-              if (seen.size == fanoutSize) completion.trySuccess(Done)
-              seen + branch
-      })
-      .run()
+//    val mergingFlow = mergedSources
+//      .viaMat(KillSwitches.single)(Keep.right)
+//      .to(Sink.fold(Set.empty[Int]) {
+//          case (seen, (branch, element)) =>
+//              if (seen.size == fanoutSize) completion.trySuccess(Done)
+//              seen + branch
+//      })
+//      .run()
 
     system.scheduler.scheduleOnce(5.seconds)(
         completion.tryFailure(new Error("Did not get at least one element from every fanout branch"))
@@ -60,5 +60,5 @@ class SendAlpakka {
       .run()
 
     dataSender.shutdown()
-    mergingFlow.shutdown()
+    //mergingFlow.shutdown()
 }

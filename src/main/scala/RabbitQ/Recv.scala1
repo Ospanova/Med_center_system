@@ -36,20 +36,20 @@ case class Recv() {
             channel.queueBind(QUEUE_NAME, exchangeName, routingKey, args)
         }
         println(" [*] Waiting for messages. To exit press CTRL+C")
-        val deliverCallback: DeliverCallback = (_, delivery) => {
-            val message = new String(delivery.getBody, "UTF-8")
-            println(" [x] Received '" + message + "'")
-
-            val p: JValue = parse(message)
-            val curM = p.extract[Action].action
-            if ( curM == "getPatients") {
-                println("REE")
-                val act: Future[Patients] = (pActor ? GetPatients).mapTo[Patients]
-                act.onComplete {
-                    case Success(value) => println(value)
-                    case Failure(exception) => println("Failed")
-                }
-            }
+//        val deliverCallback: DeliverCallback = (_, delivery) => {
+//            val message = new String(delivery.getBody, "UTF-8")
+//            println(" [x] Received '" + message + "'")
+//
+//            val p: JValue = parse(message)
+//            val curM = p.extract[Action].action
+//            if ( curM == "getPatients") {
+//                println("REE")
+//                val act: Future[Patients] = (pActor ? GetPatients).mapTo[Patients]
+//                act.onComplete {
+//                    case Success(value) => println(value)
+//                    case Failure(exception) => println("Failed")
+//                }
+//            }
             else if (curM == "getByID") {
                val k = p.extract[PID].id
                 val patient: Future[Option[Patient]] = (pActor  ? GetbyID(k)).mapTo[Option[Patient]]

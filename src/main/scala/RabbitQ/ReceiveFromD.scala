@@ -35,10 +35,10 @@ case class ReceiveFromD() {
             channel.queueBind(QUEUE_NAME, exchangeName, routingKey, args)
         }
         println(" [*] Waiting for messages. To exit press CTRL+C")
-        val deliverCallback: DeliverCallback = (_, delivery) => {
-            val message = new String(delivery.getBody, "UTF-8")
-            println(" [x] Received '" + message + "'")
-        }
-        channel.basicConsume(QUEUE_NAME, true, deliverCallback, _ => {})
+//        val deliverCallback: DeliverCallback = (_, delivery) => {
+//            val message = new String(delivery.getBody, "UTF-8")
+//            println(" [x] Received '" + message + "'")
+//        }
+//        channel.basicConsume(QUEUE_NAME, true, deliverCallback, _ => {})
     }
 }

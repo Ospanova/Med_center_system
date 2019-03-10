@@ -87,5 +87,5 @@ object Boot extends App {
        case Failure(exception) => println(exception.getMessage)
    }
 
-    //ReceiveFromP().recv("response.doctor.dar")
+    ReceiveFromP().recv("response.doctor.dar")
 }

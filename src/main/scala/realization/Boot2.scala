@@ -16,7 +16,7 @@ package realization
     import akka.util.Timeout
     import Actors.PatientActor._
     import Actors.{PatientActor, Patients}
-    import RabbitQ.{ReceiveFromD, Recv, SendRabbit, SendToD}
+    import RabbitQ.{ReceiveFromD, SendRabbit, SendToD}
     import akka.io.Udp.Send
     import dao.PatientDAO
 
@@ -90,9 +90,9 @@ package realization
         val bindingFuture = Http().bind("localhost", 8080).runForeach(_.handleWith(Route.handlerFlow(patientRoute.route)))
         //Http().bindAndHandle(patientRoute.route, "localhost", 8080)
 
-        //SendToD().sendMsg("""{"action":"giveSchedule","id": 1}""")
+        //SendToD.createSendToD().sendMsg("""{"action":"giveSchedule","id": 1}""")
         //Recv().recv("response.patient.dar")
-        //ReceiveFromD().recv("response.patient.dar")
+        //ReceiveFromD().recv("response.doctor.dar")
     }
 
 
