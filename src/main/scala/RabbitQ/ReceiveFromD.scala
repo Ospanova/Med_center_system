@@ -1,7 +1,6 @@
 package RabbitQ
 
-import Actors.PatientActor._
-import Actors.{PatientActor, Patients}
+
 import akka.actor.{ActorRef, ActorSystem}
 import akka.http.scaladsl.server.Directives.{as, complete, entity, onSuccess, rejectEmptyResponse}
 import com.rabbitmq.client._
@@ -10,7 +9,6 @@ import akka.stream.ActorMaterializer
 import akka.util.Timeout
 import model.{FullPatient, Patient}
 import org.json4s._
-import org.json4s.jackson.JsonMethods._
 
 import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global

@@ -1,9 +1,9 @@
 package mappings
 
-import Actors.PatientActor.ActionPerformed
 import model.{FullPatient, Patient}
 import spray.json.DefaultJsonProtocol
 import Actors._
+import routing.ActionPerformed
 
 trait JsonMappings extends DefaultJsonProtocol {
     implicit val patientFormat = jsonFormat7(Patient)

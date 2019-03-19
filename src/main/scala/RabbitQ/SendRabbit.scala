@@ -1,9 +1,7 @@
 package RabbitQ
 
-import Actors.PatientActor.GetPatients
 import com.rabbitmq.client.AMQP.Channel
 import com.rabbitmq.client.{AMQP, ConnectionFactory}
-import org.json4s.jackson.JsonMethods._
 
 case class SendRabbit(msg: String) {
     val factory = new ConnectionFactory()

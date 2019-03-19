@@ -2,10 +2,6 @@ package model
 
 import AbstractClasses._
 
-import scala.collection.mutable
-import scala.collection.mutable._
-
-
 case class Patient (ID: Option[Int] = None, name: String, surname : String,
                     username: String = "+", password: String = "+", number: Long, stringCalendar: String) extends User {
     //val history : HashMap[Session, Description] = HashMap.empty

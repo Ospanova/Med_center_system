@@ -1,11 +1,11 @@
 package AbstractClasses
 
-import Actors.{PatientActor, Patients}
-import Actors.PatientActor.GetPatients
+import Actors.{PatientManagerActor, Patients}
 import akka.actor.{ActorRef, ActorSystem}
 import akka.stream.ActorMaterializer
 import akka.pattern.ask
 import akka.util.Timeout
+import routing.GetPatients
 
 import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -15,7 +15,7 @@ object UserFactory {
 
     implicit val system = ActorSystem()
     implicit val materializer = ActorMaterializer()
-    implicit val pActor: ActorRef = system.actorOf(PatientActor.props, "PatientActor")
+    implicit val pActor: ActorRef = system.actorOf(PatientManagerActor.props, "PatientActor")
     implicit lazy val timeout: Timeout = Timeout(10.seconds)
     def getUser (username : String, password: String): Option[User] ={
         if (username.contains('_')) {

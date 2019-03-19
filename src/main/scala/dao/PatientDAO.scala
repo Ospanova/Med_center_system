@@ -7,7 +7,7 @@ import akka.stream.alpakka.slick.scaladsl._
 import model.{FullPatient, Patient}
 import slick.dbio.Effect
 import slick.jdbc.PostgresProfile.api._
-import slick.sql.FixedSqlAction
+
 
 import scala.concurrent.{Await, Future}
 
